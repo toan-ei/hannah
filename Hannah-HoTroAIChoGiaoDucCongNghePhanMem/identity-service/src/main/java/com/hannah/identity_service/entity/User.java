@@ -1,12 +1,10 @@
 package com.hannah.identity_service.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -22,4 +20,6 @@ public class User {
     private String password;
     private String fullName;
     private LocalDate dob;
+    @ManyToMany
+    private Set<Role> roles;
 }

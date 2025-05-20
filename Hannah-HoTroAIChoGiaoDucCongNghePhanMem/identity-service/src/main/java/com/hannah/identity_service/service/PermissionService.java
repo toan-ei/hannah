@@ -1,0 +1,40 @@
+package com.hannah.identity_service.service;
+
+import com.hannah.identity_service.dto.request.PermissionRequest;
+import com.hannah.identity_service.dto.response.PermissionResponse;
+import com.hannah.identity_service.entity.Permission;
+import com.hannah.identity_service.exception.ApplicationException;
+import com.hannah.identity_service.exception.ErrorCode;
+import com.hannah.identity_service.mapper.PermissionMapper;
+import com.hannah.identity_service.repository.PermissionRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class PermissionService {
+    PermissionRepository permissionRepository;
+    PermissionMapper permissionMapper;
+
+    public PermissionResponse createPermission(PermissionRequest request){
+        Permission permission = permissionMapper.toPermission(request);
+        return permissionMapper.toPermissionResponse(permissionRepository.save(permission));
+    }
+
+    public List<PermissionResponse> getAllPermission(){
+        return permissionRepository.findAll().stream().map(permissionMapper::toPermissionResponse).collect(Collectors.toList());
+    }
+
+    public String deletePermission(String namePermission){
+        Permission permission = permissionRepository.findById(namePermission).orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+        permissionRepository.delete(permission);
+        return "delete permission success";
+    }
+
+}
