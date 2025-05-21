@@ -2,9 +2,12 @@ package com.hannah.identity_service.controller;
 
 import com.hannah.identity_service.dto.request.AuthenticationRequest;
 import com.hannah.identity_service.dto.request.CheckTokenRequest;
+import com.hannah.identity_service.dto.request.LogoutRequest;
+import com.hannah.identity_service.dto.request.RefreshRequest;
 import com.hannah.identity_service.dto.response.ApiResponse;
 import com.hannah.identity_service.dto.response.AuthenticationResponse;
 import com.hannah.identity_service.dto.response.CheckTokenResponse;
+import com.hannah.identity_service.dto.response.LogoutResponse;
 import com.hannah.identity_service.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
@@ -37,6 +40,20 @@ public class AuthenticationController {
         CheckTokenResponse checkTokenResponse = authenticationService.checkToken(request);
         return ApiResponse.<CheckTokenResponse>builder()
                 .result(checkTokenResponse)
+                .build();
+    }
+    @PostMapping("/logout")
+    public ApiResponse<LogoutResponse> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+        LogoutResponse logoutResponse = authenticationService.logout(request);
+        return ApiResponse.<LogoutResponse>builder()
+                .result(logoutResponse)
+                .build();
+    }
+    @PostMapping("/refreshToken")
+    public ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
+        AuthenticationResponse authenticationResponse = authenticationService.refreshToken(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(authenticationResponse)
                 .build();
     }
 }
