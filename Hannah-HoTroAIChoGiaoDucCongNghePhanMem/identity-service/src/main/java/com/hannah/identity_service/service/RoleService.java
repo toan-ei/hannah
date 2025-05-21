@@ -11,6 +11,7 @@ import com.hannah.identity_service.repository.RoleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -25,6 +26,7 @@ public class RoleService {
     RoleMapper roleMapper;
     PermissionRepository permissionRepository;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public RoleResponse createRole(RoleRequest request){
         Role role = roleMapper.toRole(request);
         var permissions = permissionRepository.findAllById(request.getPermissions());
@@ -32,10 +34,12 @@ public class RoleService {
         return roleMapper.toRoleResponse(roleRepository.save(role));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<RoleResponse> getAllRole(){
         return roleRepository.findAll().stream().map(roleMapper::toRoleResponse).collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String deleteRole(String nameRole){
         Role role = roleRepository.findById(nameRole)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
