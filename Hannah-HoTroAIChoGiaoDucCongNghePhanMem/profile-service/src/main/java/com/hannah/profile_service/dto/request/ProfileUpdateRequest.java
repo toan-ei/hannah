@@ -1,0 +1,21 @@
+package com.hannah.profile_service.dto.request;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.util.Date;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ProfileUpdateRequest {
+    String userId;
+    String avatar;
+    String fullName;
+    Date dob;
+    String gender;
+    String address;
+    String phoneNumber;
+}

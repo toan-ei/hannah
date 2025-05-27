@@ -14,6 +14,5 @@ import java.time.LocalDate;
 public class CreateUserRequest {
     private String username;
     private String password;
-    private String fullName;
-    private LocalDate dob;
+    private String gender;
 }

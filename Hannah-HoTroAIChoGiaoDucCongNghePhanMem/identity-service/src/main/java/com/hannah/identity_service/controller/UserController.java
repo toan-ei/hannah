@@ -23,7 +23,7 @@ import java.util.List;
 public class UserController {
     UserService userService;
 
-    @PostMapping("createUser")
+    @PostMapping("/createUser")
     public ApiResponse<UserResponse> createUser(@RequestBody CreateUserRequest request){
         UserResponse userResponse = userService.createUser(request);
         return ApiResponse.<UserResponse>builder()

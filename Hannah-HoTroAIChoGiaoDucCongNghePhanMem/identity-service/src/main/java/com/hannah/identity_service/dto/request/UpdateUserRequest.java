@@ -15,6 +15,5 @@ import java.util.Set;
 public class UpdateUserRequest {
     private String password;
     private String fullName;
-    private LocalDate dob;
     private Set<String> roles;
 }
