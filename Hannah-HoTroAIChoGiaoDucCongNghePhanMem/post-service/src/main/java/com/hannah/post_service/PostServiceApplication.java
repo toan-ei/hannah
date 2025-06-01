@@ -1,4 +1,4 @@
-package com.hannah.profile_service;
+package com.hannah.post_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients
-public class ProfileServiceApplication {
+public class PostServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ProfileServiceApplication.class, args);
+		SpringApplication.run(PostServiceApplication.class, args);
 	}
 
 }

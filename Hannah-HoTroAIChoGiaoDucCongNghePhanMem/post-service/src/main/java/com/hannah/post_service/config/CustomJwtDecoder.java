@@ -1,4 +1,4 @@
-package com.hannah.profile_service.config;
+package com.hannah.post_service.config;
 
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 
 @Component
-public class Decoder implements JwtDecoder {
+public class CustomJwtDecoder implements JwtDecoder {
     @Override
     public Jwt decode(String token) throws JwtException {
         try {

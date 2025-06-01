@@ -140,7 +140,7 @@ public class AuthenticationService {
     private String generateToken(User user){
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getUsername())
+                .subject(user.getId())
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(validDuration, ChronoUnit.MINUTES).toEpochMilli()))
                 .issuer("em toan nghien code")

@@ -74,7 +74,6 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteUser(String userId){
         userRepository.deleteById(userId);
     }

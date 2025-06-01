@@ -3,6 +3,7 @@ package com.hannah.profile_service.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -11,26 +12,26 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class ProfileConfig {
+@EnableMethodSecurity
+public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINT = {
-            "/profiles/createProfile"
+            "/profiles/Internal/**"
     };
-    private final Decoder decoder;
+    private final CustomJwtDecoder customJwtDecoder;
 
-    public ProfileConfig(Decoder decoder){
-        this.decoder = decoder;
+    public SecurityConfig(CustomJwtDecoder customJwtDecoder){
+        this.customJwtDecoder = customJwtDecoder;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/profiles/GetAllProfile").permitAll()
+                request.requestMatchers(PUBLIC_ENDPOINT).permitAll()
                         .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer ->
-                        jwtConfigurer.decoder(decoder).jwtAuthenticationConverter(authenticationConverter()))
+                        jwtConfigurer.decoder(customJwtDecoder).jwtAuthenticationConverter(authenticationConverter()))
                         .authenticationEntryPoint(new JwtAuthenticationEntrypoint()));
 
         httpSecurity.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());

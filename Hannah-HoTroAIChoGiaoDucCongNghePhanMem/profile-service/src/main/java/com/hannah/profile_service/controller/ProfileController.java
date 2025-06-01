@@ -19,13 +19,6 @@ import java.util.List;
 public class ProfileController {
     ProfileService profileService;
 
-    @PostMapping("/createProfile")
-    public ApiResponse<ProfileResponse> createProfile(@RequestBody ProfileRequest request){
-        return ApiResponse.<ProfileResponse>builder()
-                .result(profileService.createProfile(request))
-                .build();
-    }
-
     @GetMapping("/getProfile/{profileId}")
     public ApiResponse<ProfileResponse> getProfile(@PathVariable String profileId) {
         return ApiResponse.<ProfileResponse>builder()
