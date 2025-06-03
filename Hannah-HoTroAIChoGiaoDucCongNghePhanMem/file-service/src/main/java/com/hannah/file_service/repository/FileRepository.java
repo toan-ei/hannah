@@ -1,7 +1,10 @@
 package com.hannah.file_service.repository;
 
 import com.hannah.file_service.dto.response.FileDataResponse;
+import com.hannah.file_service.entity.FileManagement;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
@@ -38,5 +41,10 @@ public class FileRepository {
                 .path(filePath.toString())
                 .url(urlPrefix + name)
                 .build();
+    }
+
+    public Resource read(FileManagement fileManagement) throws IOException {
+        byte[] bytes = Files.readAllBytes(Paths.get(fileManagement.getPath()));
+        return new ByteArrayResource(bytes);
     }
 }

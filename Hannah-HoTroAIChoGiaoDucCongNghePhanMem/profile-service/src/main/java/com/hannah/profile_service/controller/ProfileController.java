@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -38,6 +39,22 @@ public class ProfileController {
                                                       @PathVariable String profileId){
         return ApiResponse.<ProfileResponse>builder()
                 .result(profileService.updateProfile(request, profileId))
+                .build();
+    }
+
+    @PutMapping("/updateMyProfile")
+    public ApiResponse<ProfileResponse> updateMyProfile(@RequestBody ProfileUpdateRequest request){
+        ProfileResponse profileResponse = profileService.updataMyProfile(request);
+        return ApiResponse.<ProfileResponse>builder()
+                .result(profileResponse)
+                .build();
+    }
+
+    @PutMapping("/avatar")
+    public ApiResponse<ProfileResponse> updateAvatar(@RequestParam("media")MultipartFile file){
+        ProfileResponse profileResponse = profileService.updateAvatar(file);
+        return ApiResponse.<ProfileResponse>builder()
+                .result(profileResponse)
                 .build();
     }
 

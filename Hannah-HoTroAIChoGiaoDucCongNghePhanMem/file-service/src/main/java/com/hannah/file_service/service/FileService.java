@@ -1,14 +1,18 @@
 package com.hannah.file_service.service;
 
 import com.hannah.file_service.dto.response.FileDataResponse;
+import com.hannah.file_service.dto.response.FileDownloadResponse;
 import com.hannah.file_service.dto.response.FileResponse;
 import com.hannah.file_service.entity.FileManagement;
+import com.hannah.file_service.exception.ApplicationException;
+import com.hannah.file_service.exception.ErrorCode;
 import com.hannah.file_service.mapper.FileMapper;
 import com.hannah.file_service.repository.FileManagementRepository;
 import com.hannah.file_service.repository.FileRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.core.io.Resource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -34,6 +38,16 @@ public class FileService {
 
         return FileResponse.builder()
                 .url(fileDataResponse.getUrl())
+                .build();
+    }
+
+    public FileDownloadResponse downloadMedia(String name) throws IOException {
+        FileManagement fileManagement = fileManagementRepository.findById(name).orElseThrow(() -> new ApplicationException(ErrorCode.FILE_NOT_FOUND));
+
+        Resource read = fileRepository.read(fileManagement);
+        return FileDownloadResponse.builder()
+                .resource(read)
+                .contentType(fileManagement.getContentType())
                 .build();
     }
 }

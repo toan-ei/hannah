@@ -11,8 +11,6 @@ import java.util.Date;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProfileUpdateRequest {
-    String userId;
-    String avatar;
     String fullName;
     Date dob;
     String gender;

@@ -4,6 +4,10 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/file-service?authSource=admin
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 server:
   port: 8083
   servlet:
@@ -12,4 +16,4 @@ server:
 app:
   file:
     storage-dir: D:/workspace/media/
-    download-prefix: http://localhost:8083/file/media/upload
+    download-prefix: http://localhost:8083/file/media/download/

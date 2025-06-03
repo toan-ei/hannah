@@ -11,7 +11,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(1002, "user not found", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1003, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1004, "you do not have permission", HttpStatus.FORBIDDEN),
-    DISABLED(1005, "token has been disabled", HttpStatus.UNAUTHORIZED);
+    DISABLED(1005, "token has been disabled", HttpStatus.UNAUTHORIZED),
+    FILE_NOT_FOUND(1006, "file not found", HttpStatus.NOT_FOUND);
 
     private int code;
     private String message;
