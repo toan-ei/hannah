@@ -12,8 +12,10 @@ import java.time.Instant;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostResponse {
     String id;
-    String content;
     String userId;
+    String type;
+    String content;
+    String video;
     String fullName;
     String createdTime;
     Instant createdDate;

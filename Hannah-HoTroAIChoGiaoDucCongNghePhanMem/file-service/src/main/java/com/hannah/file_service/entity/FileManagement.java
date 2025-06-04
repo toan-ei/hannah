@@ -17,6 +17,7 @@ public class FileManagement {
     @MongoId
     String id;
     String contentType;
+    String category;
     String ownerId;
     long size;
     String md5Checksum;

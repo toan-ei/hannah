@@ -19,7 +19,9 @@ public class Post {
     @MongoId
     String id;
     String userId;
+    String type;
     String content;
+    String video;
     Instant createdDate;
     Instant modifiedDate;
 }

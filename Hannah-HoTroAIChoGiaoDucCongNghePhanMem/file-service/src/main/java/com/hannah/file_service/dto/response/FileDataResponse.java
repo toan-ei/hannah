@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 public class FileDataResponse {
     String name;
     String contentType;
+    String category;
     long size;
     String md5Checksum;
     String path;

@@ -1,5 +1,6 @@
 package com.hannah.file_service.repository;
 
+import com.hannah.file_service.constant.PostType;
 import com.hannah.file_service.dto.response.FileDataResponse;
 import com.hannah.file_service.entity.FileManagement;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,22 +21,27 @@ import java.util.UUID;
 
 @Repository
 public class FileRepository {
-    @Value("${app.file.storage-dir}")
-    private String storageDir;
+    @Value("${app.file.storage-dir-avatar}")
+    private String storageDirAvatar;
+    @Value("${app.file.storage-dir-video}")
+    private String storageDirVideo;
     @Value("${app.file.download-prefix}")
     private String urlPrefix;
 
     public FileDataResponse storage(MultipartFile file) throws IOException {
-        Path path = Paths.get(storageDir);
+        String pathDir = (file.getContentType().startsWith("image")) ? storageDirAvatar : storageDirVideo;
+        Path path = Paths.get(pathDir);
         String fileExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
         String name = Objects.isNull(fileExtension)
                 ? UUID.randomUUID().toString()
                 : UUID.randomUUID().toString() + "." + fileExtension;
         Path filePath = path.resolve(name).normalize().toAbsolutePath();
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        String catelogy = (file.getContentType().startsWith("image")) ? PostType.TEXT: PostType.VIDEO;
         return FileDataResponse.builder()
                 .name(name)
                 .contentType(file.getContentType())
+                .category(catelogy)
                 .size(file.getSize())
                 .md5Checksum(DigestUtils.md5DigestAsHex(file.getInputStream()))
                 .path(filePath.toString())

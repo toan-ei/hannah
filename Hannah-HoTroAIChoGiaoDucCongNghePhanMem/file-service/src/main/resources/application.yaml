@@ -15,5 +15,6 @@ server:
 
 app:
   file:
-    storage-dir: D:/workspace/media/
+    storage-dir-avatar: D:/workspace/media/
+    storage-dir-video: D:/workspace/media-video/
     download-prefix: http://localhost:8083/file/media/download/

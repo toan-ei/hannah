@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +20,14 @@ public class PostController {
     @PostMapping("/createPost")
     public ApiResponse<PostResponse> createPost(@RequestBody PostRequest request){
         PostResponse postResponse = postService.createPost(request);
+        return ApiResponse.<PostResponse>builder()
+                .result(postResponse)
+                .build();
+    }
+
+    @PostMapping("/createVideoPost")
+    public ApiResponse<PostResponse> createVideoPost(@RequestParam(name = "media") MultipartFile file){
+        PostResponse postResponse = postService.createVideoPost(file);
         return ApiResponse.<PostResponse>builder()
                 .result(postResponse)
                 .build();
