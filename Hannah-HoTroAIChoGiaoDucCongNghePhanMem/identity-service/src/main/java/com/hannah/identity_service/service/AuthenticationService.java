@@ -108,8 +108,8 @@ public class AuthenticationService {
                 .build();
         invalidateRepository.save(invalidatedToken);
 
-        String usename = singedjwt.getJWTClaimsSet().getSubject();
-        User user = userRepository.findByUsername(usename)
+        String userId = singedjwt.getJWTClaimsSet().getSubject();
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
         String token = generateToken(user);
         return AuthenticationResponse.builder()

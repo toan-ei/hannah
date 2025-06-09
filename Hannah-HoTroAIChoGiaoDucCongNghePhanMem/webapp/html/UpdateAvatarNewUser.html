@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="/webapp/css/UpdateProfileNewUser.css">
+  <title>Cập nhật thông tin</title>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="left-panel">
+        <h1>Thông báo</h1>
+        <p>Chào mừng bạn đến với hệ thống. Đây là lần đầu tiên bạn truy cập, vui lòng cập nhật thông tin cá nhân bên dưới để tiếp tục sử dụng dịch vụ.</p>
+      </div>
+      <div class="right-panel">
+        <form id="updateForm" method="POST" enctype="multipart/form-data">
+            <label for="avatar">Ảnh đại diện</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*" required />
+            <img id="avatarPreview" src="#" alt="Preview" style="max-width: 150px; display: none; margin-bottom: 15px;" />
+            <button id="update" type="submit">Cập nhật thông tin</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  document.getElementById('avatar').addEventListener('change', function (e) {
+    const [file] = this.files;
+    if (file) {
+      const preview = document.getElementById('avatarPreview');
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+    }
+  });
+</script>
+<script src="/webapp/js/UpdateAvatarNewUser.js"></script>
+<script src="/webapp/js/RefreshToken.js"></script>
+</html>

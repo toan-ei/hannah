@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="/webapp/css/UpdateProfileNewUser.css">
+  <title>Cập nhật thông tin</title>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="left-panel">
+        <h1>Thông báo</h1>
+        <p>Chào mừng bạn đến với hệ thống. Đây là lần đầu tiên bạn truy cập, vui lòng cập nhật thông tin cá nhân bên dưới để tiếp tục sử dụng dịch vụ.</p>
+      </div>
+      <div class="right-panel">
+        <form id="updateForm">
+          <label for="fullName">Họ và tên</label>
+          <input type="text" id="fullName" name="fullName" required />
+
+          <label for="dob">Ngày sinh</label>
+          <input type="date" id="dob" name="dob" />
+
+          <label for="address">Địa chỉ</label>
+          <input type="text" id="address" name="address" />
+
+          <label for="phoneNumber">Số điện thoại</label>
+          <input type="tel" id="phoneNumber" name="phoneNumber" pattern="[0-9]{10}" placeholder="VD: 0912345678"/>
+
+          <button id="update" type="submit">cập nhật thông tin</button>
+        </form>
+      </div>
+    </div>
+    <div>
+      <button id="skip">skip</button>
+    </div>
+  </div>
+</body>
+<script src="/webapp/js/UpdateProfileNewUser.js"></script>
+<script src="/webapp/js/RefreshToken.js"></script>
+</html>

@@ -1,0 +1,81 @@
+/* Đặt lại mặc định */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Toàn bộ nền trang */
+body {
+  height: 100vh;
+  background: linear-gradient(135deg, #74ebd5, #9face6); /* Gradient đẹp mắt */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+a {
+  font-size: 10px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #0b8d50;
+}
+
+/* Hộp đăng nhập */
+.container {
+  background-color: rgba(255, 255, 255, 0.15); /* nền mờ */
+  backdrop-filter: blur(10px); /* hiệu ứng mờ */
+  border-radius: 20px;
+  padding: 40px;
+  width: 300px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* Tiêu đề */
+.name {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #fff;
+}
+
+/* Input chung */
+.data {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+/* Khi focus vào input */
+.data:focus {
+  background-color: #fff;
+  box-shadow: 0 0 0 2px #9face6;
+}
+
+/* Nút send */
+.send {
+  margin-top: 10px;
+  padding: 12px;
+  width: 100%;
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* Hover nút */
+.send:hover {
+  background-color: #5848e5;
+}

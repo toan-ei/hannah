@@ -41,10 +41,12 @@ public class ProfileService {
         return profileMapper.toProfileResponse(profileRepository.save(profile));
     }
 
-    public ProfileResponse getProfileFromUserId(String userId){
-        Optional<Profile> profile = profileRepository.findByUserId(userId);
-        log.info(profile.get().getFullName().toString());
-        return profileMapper.toProfileResponse(profile.get());
+    public ProfileResponse getProfileFromUserId(String userId) {
+        Profile profile =
+                profileRepository.findByUserId(userId)
+                        .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
+
+        return profileMapper.toProfileResponse(profile);
     }
 
     public ProfileResponse getProfile(String id){

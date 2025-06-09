@@ -13,26 +13,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/profiles/Internal")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class InternalProfileController {
     ProfileService profileService;
 
-    @PostMapping("/createProfile")
+    @PostMapping("/profiles/Internal/createProfile")
     public ApiResponse<ProfileResponse> createProfile(@RequestBody ProfileRequest request){
         return ApiResponse.<ProfileResponse>builder()
                 .result(profileService.createProfile(request))
                 .build();
     }
-
-    @GetMapping("/getProfile/{userId}")
-    public ApiResponse<ProfileResponse> getProfileFromUserId(@PathVariable String userId){
-        ProfileResponse profileResponse = profileService.getProfileFromUserId(userId);
-        return ApiResponse.<ProfileResponse>builder()
-                .result(profileResponse)
-                .build();
-    }
-
-
 }

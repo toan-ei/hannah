@@ -1,6 +1,5 @@
 package com.hannah.profile_service.controller;
 
-import com.hannah.profile_service.dto.request.ProfileRequest;
 import com.hannah.profile_service.dto.request.ProfileUpdateRequest;
 import com.hannah.profile_service.dto.response.ApiResponse;
 import com.hannah.profile_service.dto.response.ProfileResponse;
@@ -19,6 +18,14 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProfileController {
     ProfileService profileService;
+
+    @GetMapping("/getProfile/fromUserId/{userId}")
+    public ApiResponse<ProfileResponse> getProfileFromUserId(@PathVariable String userId){
+        ProfileResponse profileResponse = profileService.getProfileFromUserId(userId);
+        return ApiResponse.<ProfileResponse>builder()
+                .result(profileResponse)
+                .build();
+    }
 
     @GetMapping("/getProfile/{profileId}")
     public ApiResponse<ProfileResponse> getProfile(@PathVariable String profileId) {
