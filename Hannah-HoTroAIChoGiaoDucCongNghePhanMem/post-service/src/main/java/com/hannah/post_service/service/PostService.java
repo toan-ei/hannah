@@ -3,6 +3,7 @@ package com.hannah.post_service.service;
 import com.hannah.post_service.Entity.Post;
 import com.hannah.post_service.constant.PostType;
 import com.hannah.post_service.dto.request.PostRequest;
+import com.hannah.post_service.dto.request.PostVideoRequest;
 import com.hannah.post_service.dto.response.*;
 import com.hannah.post_service.mapper.PostMapper;
 import com.hannah.post_service.repository.PostRepository;
@@ -22,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,11 +50,13 @@ public class PostService {
         return postMapper.toPostResponse(post);
     }
 
-    public PostResponse createVideoPost(MultipartFile file){
+    public PostResponse createVideoPost(MultipartFile file, PostVideoRequest request){
+        log.info("2");
         ApiResponse<FileResponse> fileResponseApiResponse = fileClient.uploadMedia(file);
-        log.info("111");
+        log.info("3");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Post post = Post.builder()
+                .title(request.getTitle())
                 .type(PostType.VIDEO)
                 .video(fileResponseApiResponse.getResult().getUrl())
                 .userId(authentication.getName())
@@ -92,6 +97,11 @@ public class PostService {
                 .totalElements(data.getTotalElements())
                 .data(postList)
                 .build();
+    }
+
+    public List<PostResponse> getTeacherListPosts(String userId){
+        List<Post> allByUserId = postRepository.findAllByUserId(userId);
+        return allByUserId.stream().map(postMapper::toPostResponse).collect(Collectors.toList());
     }
 
 }

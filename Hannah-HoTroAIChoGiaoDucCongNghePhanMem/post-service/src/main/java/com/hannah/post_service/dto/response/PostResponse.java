@@ -13,6 +13,7 @@ import java.time.Instant;
 public class PostResponse {
     String id;
     String userId;
+    String title;
     String type;
     String content;
     String video;

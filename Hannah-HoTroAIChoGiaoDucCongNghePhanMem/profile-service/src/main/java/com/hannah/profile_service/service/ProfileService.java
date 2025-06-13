@@ -1,5 +1,6 @@
 package com.hannah.profile_service.service;
 
+import com.hannah.profile_service.dto.request.ProfileListUserIDRequest;
 import com.hannah.profile_service.dto.request.ProfileRequest;
 import com.hannah.profile_service.dto.request.ProfileUpdateRequest;
 import com.hannah.profile_service.dto.response.ApiResponse;
@@ -47,6 +48,12 @@ public class ProfileService {
                         .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
 
         return profileMapper.toProfileResponse(profile);
+    }
+
+    public List<ProfileResponse> getProfilesFromUserIds(ProfileListUserIDRequest request){
+        List<Profile> profiles = profileRepository.findByUserIdIn(request.getUserIds());
+        log.info("profiles {}", profiles);
+        return profiles.stream().map(profileMapper::toProfileResponse).collect(Collectors.toList());
     }
 
     public ProfileResponse getProfile(String id){

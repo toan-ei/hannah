@@ -3,6 +3,7 @@ package com.hannah.identity_service.controller;
 import com.hannah.identity_service.dto.request.CreateUserRequest;
 import com.hannah.identity_service.dto.request.UpdateUserRequest;
 import com.hannah.identity_service.dto.response.ApiResponse;
+import com.hannah.identity_service.dto.response.ProfileResponse;
 import com.hannah.identity_service.dto.response.UserResponse;
 import com.hannah.identity_service.service.UserService;
 import lombok.AccessLevel;
@@ -67,6 +68,15 @@ public class UserController {
         userService.deleteUser(userId);
         return ApiResponse.<Void>builder()
                 .code(1001)
+                .build();
+    }
+
+    @GetMapping("/getUserRoleTeacher")
+    public ApiResponse<List<ProfileResponse>> getUserRoleTeacher(){
+        List<ProfileResponse> profileResponses = userService.getUserRoleTeacher();
+        log.info("profile in identity : {}", profileResponses);
+        return ApiResponse.<List<ProfileResponse>>builder()
+                .result(profileResponses)
                 .build();
     }
 

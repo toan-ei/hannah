@@ -45,4 +45,4 @@ setInterval(() => {
         console.log("error when check token: ", err);
     })
 
-}, 6 * 60 * 1000);
+}, 10 * 1000);

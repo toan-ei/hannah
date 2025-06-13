@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException runtimeException){
+        runtimeException.printStackTrace();
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(ErrorCode.UNCATEFORIZED_EXCEPTION.getCode());
         apiResponse.setResult(ErrorCode.UNCATEFORIZED_EXCEPTION.getMessage());

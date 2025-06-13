@@ -68,8 +68,84 @@ function checkUserHasBeenLogin(){
     } 
 }
 
+function userRoleTeacher(){
+    const urlUserRoleTeacher = "http://localhost:9999/api/identity/users/getUserRoleTeacher";
+    fetch(urlUserRoleTeacher, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then((response) => {
+        return response.json();
+    })
+    .then((data) => {
+        const frameTeacher = document.getElementById('frameTeacher');
+        console.log(data);
+        data.result.forEach(profile => {
+            const article = document.createElement("article");
+            article.className = `class="flex flex-col bg-gray-50 rounded-lg p-5 shadow hover:shadow-md transition-shadow h-full"
+                style="min-height: 220px;"`;
+            article.innerHTML = `
+            <div class="flex items-center space-x-4 mb-4">
+            <div
+                class="rounded-full w-14 h-14 flex items-center justify-center font-semibold text-indigo-600 bg-indigo-100"
+            >
+                <img src="${profile.avatar}" alt="Avatar" class="w-full h-full object-cover rounded-full">
+            </div>
+            <div>
+                <h2 class="font-semibold text-lg text-gray-900 leading-tight">
+                ${profile.fullName}
+                </h2>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                address: ${profile.address} /
+                phoneNumber: ${profile.phoneNumber} 
+                </p>
+            </div>
+            </div>
+            <div class="flex items-center justify-between mt-auto">
+            <div
+                class="border border-indigo-600 rounded-md px-3 py-1 font-semibold text-indigo-600 bg-indigo-100"
+            >
+                32 bài
+            </div>
+            <button
+                data-user-id="${profile.userId}"
+                class="join-btn border border-indigo-600 rounded-md px-6 py-2 text-indigo-600 font-semibold hover:bg-indigo-600 hover:text-white transition"
+                type="button"
+            >
+                vào học
+            </button>
+            </div>
+            `;
+            frameTeacher.appendChild(article)
+        });
+    })
+    .catch((err) => {
+        console.log("error when get profile teacher: ", err);
+        alert("loi");
+    })
+}
+
+function getUserIdTeacher(){
+     document.getElementById('frameTeacher').addEventListener('click', function (event) {
+        if (event.target.classList.contains('join-btn')) {
+            const userId = event.target.dataset.userId;
+            console.log("User ID:", userId);
+            localStorage.setItem('userIdTeacher', userId);
+            window.location.href = "knowledge.html";
+        }
+    });
+}
+
+
 window.addEventListener("DOMContentLoaded", () => {
     console.log("token: ", localStorage.getItem("token"));
-    checkUserNewOrNot();
     checkUserHasBeenLogin();
+    if (window.location.pathname.endsWith("index.html")) {
+        console.log("Bạn đang ở trang index.html");
+        checkUserNewOrNot();
+        userRoleTeacher();
+        getUserIdTeacher();
+    }
 })

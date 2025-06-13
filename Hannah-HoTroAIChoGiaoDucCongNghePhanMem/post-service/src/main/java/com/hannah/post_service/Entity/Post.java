@@ -19,6 +19,7 @@ public class Post {
     @MongoId
     String id;
     String userId;
+    String title;
     String type;
     String content;
     String video;

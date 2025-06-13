@@ -14,6 +14,5 @@ import java.util.Set;
 @AllArgsConstructor
 public class UpdateUserRequest {
     private String password;
-    private String fullName;
     private Set<String> roles;
 }
