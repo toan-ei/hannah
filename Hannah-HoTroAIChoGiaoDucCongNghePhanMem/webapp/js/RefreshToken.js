@@ -43,6 +43,8 @@ setInterval(() => {
     })
     .catch((err) => {
         console.log("error when check token: ", err);
+        alert('vui long dang nhap lai');
+        window.location.href = "login.html";
     })
 
 }, 10 * 1000);

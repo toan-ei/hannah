@@ -1,6 +1,6 @@
-package com.hannah.post_service.exception;
+package com.hannah.AI_service.exception;
 
-import com.hannah.post_service.dto.response.ApiResponse;
+import com.hannah.AI_service.dto.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -33,4 +33,5 @@ public class GlobalExceptionHandler {
                 .message(errorCode.getMessage())
                 .build());
     }
+
 }

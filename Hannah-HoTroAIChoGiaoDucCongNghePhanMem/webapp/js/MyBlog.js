@@ -1,13 +1,13 @@
-let page = 1;
-let size = 3;
-let isLoading = false;
-let totalPage = 0;
-let noMorePostsShown = false; 
+let pageMyBlog = 1;
+let sizeMyBlog = 3;
+let isLoadingMyBlog = false;
+let totalPageMyBlog = 0;
+let noMorePostsShown = false;
 
 function getMyBlogs() {
-    isLoading = true;
+    isLoadingMyBlog = true;
     const token = localStorage.getItem('token');
-    const urlMyPosts = `http://localhost:9999/api/post/myPosts?page=${page}&size=${size}`;
+    const urlMyPosts = `http://localhost:9999/api/post/myPosts?page=${pageMyBlog}&size=${sizeMyBlog}`;
 
     fetch(urlMyPosts, {
         method: "GET",
@@ -17,13 +17,14 @@ function getMyBlogs() {
         },
     })
     .then((response) => response.json())
-    .then((data) => {
-        totalPage = data.result.totalPage;
-        console.log('page: ', page);
+    .then(async (data) => {
+        totalPageMyBlog = data.result.totalPage;
+        console.log('page: ', pageMyBlog);
 
         const blogContainer = document.getElementById("blog-container");
+        const posts = data.result.data;
 
-        if (data.result.data.length === 0 && !noMorePostsShown) {
+        if (posts.length === 0 && !noMorePostsShown) {
             const div = document.createElement("div");
             div.innerHTML = `<h3 class="text-base font-semibold text-gray-800 text-center mt-4"> Hết bài viết</h3>`;
             blogContainer.appendChild(div);
@@ -31,14 +32,31 @@ function getMyBlogs() {
             return;
         }
 
-        data.result.data.forEach(post => {
+        const postPromises = posts.map(async (post) => {
+            const userIdPerson = post.userId;
+            const urlProfileFromUserId = `http://localhost:9999/api/profile/profiles/getProfile/fromUserId/${userIdPerson}`;
+
+            let avt = null;
+            try {
+                const response = await fetch(urlProfileFromUserId, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+                const profileData = await response.json();
+                avt = profileData.result.avatar;
+            } catch (err) {
+                console.log("Error when getting profile from userId:", err);
+            }
+
             const article = document.createElement("article");
             article.className = "mb-8 p-4 border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow";
 
             article.innerHTML = `
                 <div class="flex items-center mb-3 space-x-3">
                     <div class="rounded-full w-10 h-10 overflow-hidden">
-                        <img src="http://localhost:8083/file/media/download/930f20a4-73b0-4bd0-b3aa-ffa68bdc7e4b.jpg" alt="Avatar" class="w-full h-full object-cover rounded-full">
+                        <img src="${avt ?? '/default-avatar.png'}" alt="Avatar" class="w-full h-full object-cover rounded-full">
                     </div>
                     <span class="font-semibold text-gray-900 text-lg select-text">${post.fullName}</span>
                     <span class="text-xs text-gray-500">${post.createdTime}</span>
@@ -50,18 +68,20 @@ function getMyBlogs() {
             blogContainer.appendChild(article);
         });
 
-        page++;
-        isLoading = false;
+        await Promise.all(postPromises);
+        pageMyBlog++;
+        isLoadingMyBlog = false;
     })
     .catch((err) => {
         console.log("error when get my posts: ", err);
-        isLoading = false;
+        isLoadingMyBlog = false;
     });
 }
 
 function createPost() {
     const urlCreatePost = "http://localhost:9999/api/post/createPost";
     const submitBtn = document.getElementById('submitPost');
+    if (!submitBtn) return;
 
     submitBtn.onclick = () => {
         const token = localStorage.getItem('token');
@@ -99,14 +119,14 @@ function createPost() {
 window.addEventListener("DOMContentLoaded", () => {
     getMyBlogs();
     createPost();
-});
-
-window.addEventListener("scroll", () => {
-    if (
-        !isLoading &&
-        page <= totalPage &&
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 300
-    ) {
-        getMyBlogs();
-    }
+    const blogContainer = document.getElementById("blog-container");
+    blogContainer.addEventListener("scroll", () => {
+        if (
+            !isLoadingMyBlog &&
+            pageMyBlog <= totalPageMyBlog &&
+            blogContainer.scrollTop + blogContainer.clientHeight >= blogContainer.scrollHeight - 100
+        ) {
+            getMyBlogs();
+        }
+    });
 });

@@ -1,0 +1,19 @@
+server:
+  port: 8084
+  servlet:
+    context-path: /AI
+
+spring:
+  application:
+    name: AI-service
+  ai:
+    openai:
+      api-key: ${GEMINI_KEY}
+      chat:
+        base-url: https://generativelanguage.googleapis.com
+        completions-path: /v1beta/openai/chat/completions
+        options:
+          model: gemini-2.0-flash
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/chat-service?authSource=admin

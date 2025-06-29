@@ -1,8 +1,7 @@
-package com.hannah.post_service.config;
+package com.hannah.AI_service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,36 +13,37 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private static final String[] PUBLIC_ENDPOINT = {
-            "/getAllPost"
-    };
-    private final CustomJwtDecoder customJwtDecoder;
+    private static final String[] PUBLIC_ENPOINT = {
 
-    public SecurityConfig(CustomJwtDecoder customJwtDecoder){
-        this.customJwtDecoder = customJwtDecoder;
+    };
+    private final CustomDecoder customDecoder;
+    public SecurityConfig(CustomDecoder customDecoder){
+        this.customDecoder = customDecoder;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(PUBLIC_ENDPOINT).permitAll()
+                request.requestMatchers(PUBLIC_ENPOINT).permitAll()
                         .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer ->
-                        jwtConfigurer.decoder(customJwtDecoder).jwtAuthenticationConverter(authenticationConverter()))
+                        jwtConfigurer.decoder(customDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(new JwtAuthenticationEntrypoint()));
 
         httpSecurity.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
+
         return httpSecurity.build();
     }
 
     @Bean
-    public JwtAuthenticationConverter authenticationConverter (){
+    JwtAuthenticationConverter jwtAuthenticationConverter(){
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
     }
+
 }

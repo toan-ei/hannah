@@ -4,6 +4,7 @@ import com.hannah.post_service.Entity.Post;
 import com.hannah.post_service.constant.PostType;
 import com.hannah.post_service.dto.request.PostRequest;
 import com.hannah.post_service.dto.request.PostVideoRequest;
+import com.hannah.post_service.dto.request.ProfileListUserIDRequest;
 import com.hannah.post_service.dto.response.*;
 import com.hannah.post_service.mapper.PostMapper;
 import com.hannah.post_service.repository.PostRepository;
@@ -13,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,7 +25,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,7 +78,7 @@ public class PostService {
         Sort sort = Sort.by("createdDate").descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
-        var data = postRepository.findAllByUserId(userId, pageable);
+        var data = postRepository.findAllByUserIdAndType(userId, PostType.TEXT, pageable);
 
         ProfileResponse profile = null;
         try{
@@ -102,6 +107,44 @@ public class PostService {
     public List<PostResponse> getTeacherListPosts(String userId){
         List<Post> allByUserId = postRepository.findAllByUserId(userId);
         return allByUserId.stream().map(postMapper::toPostResponse).collect(Collectors.toList());
+    }
+
+    public PageResponse<PostResponse> getAllPosts(int page, int size){
+        Sort sort = Sort.by("createdDate").descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        Page<Post> allPosts = postRepository.findByType(PostType.TEXT ,pageable);
+        List<String> userIds = new ArrayList<>();
+        List<PostResponse> postList = allPosts.getContent().stream().map(post -> {
+            PostResponse postResponse = postMapper.toPostResponse(post);
+            postResponse.setCreatedTime(dateTimeFormatter.format(post.getCreatedDate()));
+
+            String userId = post.getUserId();
+            userIds.add(userId);
+            postResponse.setFullName(post.getUserId());
+            return postResponse;
+        }).toList();
+
+        ProfileListUserIDRequest request = ProfileListUserIDRequest.builder()
+                .userIds(userIds)
+                .build();
+
+        ApiResponse<List<ProfileResponse>> profilesFromUserIds = profileClient.getProfilesFromUserIds(request);
+        List<ProfileResponse> profileResponseList = profilesFromUserIds.getResult();
+        Map<String, String> userIdToFullName = new HashMap<>();
+        for (ProfileResponse profile : profileResponseList) {
+            userIdToFullName.put(profile.getUserId(), profile.getFullName());
+        }
+        for (PostResponse post : postList) {
+            String fullName = userIdToFullName.get(post.getUserId());
+            post.setFullName(fullName);
+        }
+
+        return PageResponse.<PostResponse>builder()
+                .currentPage(page)
+                .pageSize(size)
+                .totalPage(allPosts.getTotalPages())
+                .data(postList)
+                .build();
     }
 
 }

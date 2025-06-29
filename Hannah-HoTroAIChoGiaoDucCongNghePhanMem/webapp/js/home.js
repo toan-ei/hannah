@@ -65,7 +65,23 @@ function checkUserHasBeenLogin(){
         localStorage.clear();
         window.location.href = "index.html";
         });
-    } 
+    }
+    else{
+        authButtons.innerHTML = `
+        <button
+            class="border border-indigo-600 text-indigo-600 rounded-md px-4 py-1 font-semibold hover:bg-indigo-600 hover:text-white transition"
+            type="button"
+        >
+            <a href="login.html">log in</a>
+        </button>
+        <button
+            class="bg-indigo-600 text-white rounded-md px-4 py-1 font-semibold hover:bg-indigo-700 transition"
+            type="button"
+        >
+            <a href="signup.html">sign up</a>
+        </button>
+        `
+    }
 }
 
 function userRoleTeacher(){
@@ -138,14 +154,101 @@ function getUserIdTeacher(){
     });
 }
 
+let page = 1;
+const size = 3;
+let isLoading = false;
+let hasMore = true;
+
+
+function blogStudents() {
+    if (isLoading || !hasMore) return;
+    isLoading = true;
+
+    console.log("page: ", page);
+
+    const urlAllPosts = `http://localhost:9999/api/post/getAllPost?page=${page}&size=${size}`;
+    fetch(urlAllPosts, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then((response) => response.json())
+    .then(async (data) => {
+        const blogStudent = document.getElementById('frameBlogStudent');
+        const posts = data.result.data;
+
+        if (posts.length === 0) {
+            hasMore = false;
+            return;
+        }
+
+        const postPromises = posts.map(async (post) => {
+            const userIdPerson = post.userId;
+            const urlProfileFromUserId = `http://localhost:9999/api/profile/profiles/getProfile/fromUserId/${userIdPerson}`;
+
+            let avt = null;
+            try {
+                const response = await fetch(urlProfileFromUserId, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+                const profileData = await response.json();
+                avt = profileData.result.avatar;
+            } catch (err) {
+                console.log("Error when getting profile from userId:", err);
+            }
+
+            const article = document.createElement('article');
+            article.className = "mb-8 p-4 border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow";
+            article.innerHTML = `
+                <div class="flex items-center mb-3 space-x-3">
+                    <div class="rounded-full w-10 h-10 overflow-hidden">
+                        <img src="${avt ?? '/default-avatar.png'}" alt="Avatar" class="w-full h-full object-cover rounded-full">
+                    </div>
+                    <span class="font-semibold text-gray-900 text-lg select-text">${post.fullName}</span>
+                    <span class="text-xs text-gray-500">${post.createdTime}</span>
+                </div>
+                <div class="border border-gray-200 rounded-md p-3 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap bg-gray-50">
+                    ${post.content}
+                </div>
+            `;
+            blogStudent.appendChild(article);
+        });
+
+        await Promise.all(postPromises);
+        page++;
+    })
+    .catch((err) => {
+        console.log("Error when getting all blogs student:", err);
+    })
+    .finally(() => {
+        isLoading = false;
+    });
+}
+
 
 window.addEventListener("DOMContentLoaded", () => {
     console.log("token: ", localStorage.getItem("token"));
     checkUserHasBeenLogin();
     if (window.location.pathname.endsWith("index.html")) {
         console.log("Bạn đang ở trang index.html");
-        checkUserNewOrNot();
+        blogStudents();
         userRoleTeacher();
+        checkUserNewOrNot();
         getUserIdTeacher();
     }
 })
+
+const blogStudentFrame = document.getElementById('frameBlogStudent');
+blogStudentFrame.addEventListener("scroll", () => {
+    const scrollTop = blogStudentFrame.scrollTop;
+    const scrollHeight = blogStudentFrame.scrollHeight;
+    const clientHeight = blogStudentFrame.clientHeight;
+
+    if (scrollTop + clientHeight >= scrollHeight - 100) {
+        blogStudents();
+    }
+});

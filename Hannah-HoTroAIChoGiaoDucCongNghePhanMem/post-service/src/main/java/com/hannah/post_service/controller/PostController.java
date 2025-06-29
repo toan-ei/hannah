@@ -64,4 +64,15 @@ public class PostController {
                 .build();
     }
 
+    @GetMapping("/getAllPost")
+    public ApiResponse<PageResponse<PostResponse>> getAllPosts(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ){
+        PageResponse<PostResponse> allPosts = postService.getAllPosts(page, size);
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .result(allPosts)
+                .build();
+    }
+
 }
