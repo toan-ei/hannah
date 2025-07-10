@@ -2,9 +2,7 @@ package com.hannah.identity_service.controller;
 
 import com.hannah.identity_service.dto.request.CreateUserRequest;
 import com.hannah.identity_service.dto.request.UpdateUserRequest;
-import com.hannah.identity_service.dto.response.ApiResponse;
-import com.hannah.identity_service.dto.response.ProfileResponse;
-import com.hannah.identity_service.dto.response.UserResponse;
+import com.hannah.identity_service.dto.response.*;
 import com.hannah.identity_service.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -71,13 +69,25 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping("/getUserRoleTeacher")
-    public ApiResponse<List<ProfileResponse>> getUserRoleTeacher(){
-        List<ProfileResponse> profileResponses = userService.getUserRoleTeacher();
+    @GetMapping("/getUserRole/{role}")
+    public ApiResponse<PageResponseCustom<List<ProfileResponse>>> getUserRole(
+            @PathVariable String role,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size)
+    {
+        PageResponseCustom<List<ProfileResponse>> profileResponses = userService.getUserRole(role, page, size);
         log.info("profile in identity : {}", profileResponses);
-        return ApiResponse.<List<ProfileResponse>>builder()
+        return ApiResponse.<PageResponseCustom<List<ProfileResponse>>>builder()
                 .result(profileResponses)
                 .build();
     }
 
+    @GetMapping("/countUserWithRole/{role}")
+    public ApiResponse<CountUserWithRoleResponse> totalUserWithRole(@PathVariable String role)
+    {
+        CountUserWithRoleResponse countUserWithRoleResponse = userService.totalUserWithRole(role);
+        return ApiResponse.<CountUserWithRoleResponse>builder()
+                .result(countUserWithRoleResponse)
+                .build();
+    }
 }

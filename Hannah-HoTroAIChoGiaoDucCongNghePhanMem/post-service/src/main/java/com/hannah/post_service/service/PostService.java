@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,10 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,7 +52,7 @@ public class PostService {
         post = postRepository.save(post);
         return postMapper.toPostResponse(post);
     }
-
+    @PreAuthorize("hasAuthority('TEACHER')")
     public PostResponse createVideoPost(MultipartFile file, PostVideoRequest request){
         log.info("2");
         ApiResponse<FileResponse> fileResponseApiResponse = fileClient.uploadMedia(file);
@@ -130,7 +128,7 @@ public class PostService {
 
         ApiResponse<List<ProfileResponse>> profilesFromUserIds = profileClient.getProfilesFromUserIds(request);
         List<ProfileResponse> profileResponseList = profilesFromUserIds.getResult();
-        Map<String, String> userIdToFullName = new HashMap<>();
+        Map<String, String> userIdToFullName = new LinkedHashMap<>();
         for (ProfileResponse profile : profileResponseList) {
             userIdToFullName.put(profile.getUserId(), profile.getFullName());
         }

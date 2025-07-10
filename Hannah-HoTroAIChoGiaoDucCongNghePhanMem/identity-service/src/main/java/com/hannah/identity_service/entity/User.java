@@ -3,7 +3,7 @@ package com.hannah.identity_service.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+
 import java.util.Set;
 
 @Entity
@@ -19,5 +19,10 @@ public class User {
     private String username;
     private String password;
     @ManyToMany
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "roles_name")
+    )
     private Set<Role> roles;
 }

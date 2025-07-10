@@ -24,10 +24,15 @@ sendBtn.addEventListener("click", () => {
         return data.json();
     })
     .then((response) => {
-
-        alert("ban da dang nhap thanh cong");
-        localStorage.setItem("token", response.result.token);
-        window.location.href = "index.html";
+        console.log(response);
+        if(response.code === 1003 || response.code === 1004){
+            alert("tài khoản hoặc mật khẩu sai");
+        }
+        else{
+            alert("ban da dang nhap thanh cong");
+            localStorage.setItem("token", response.result.token);
+            window.location.href = "index.html";
+        }
     })
     .catch((err) => {
         console.log("loi dang ki: ", err);

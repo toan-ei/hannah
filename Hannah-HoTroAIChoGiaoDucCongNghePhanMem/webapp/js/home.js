@@ -1,7 +1,8 @@
+
 function checkUserNewOrNot(){
     const token = localStorage.getItem('token');
     const payloadBase64 = token.split('.')[1];
-    const payloadJson = atob(payloadBase64); // base64 decode
+    const payloadJson = atob(payloadBase64);
     const payload = JSON.parse(payloadJson);
     console.log("payload: ", payload);
     let userId = payload.sub;
@@ -23,7 +24,7 @@ function checkUserNewOrNot(){
         localStorage.setItem('gender', data.result.gender);
         if(data.result.fullName == null){
             console.log(data.result.fullName);
-            alert('sss')
+            alert('vì đây là lần đầu bạn login vào web, nên vui lòng thực hiện thêm thông tin')
             window.location.href = "UpdateProfileNewUser.html";        
         }
         let user = JSON.parse(localStorage.getItem('user'));
@@ -41,6 +42,8 @@ function checkUserNewOrNot(){
             localStorage.setItem('user', JSON.stringify(user));
         }
         console.log('user: ', user);
+        
+
     })
     .catch((err) => {
         console.log('error when get profile from user id ', err);
@@ -84,64 +87,87 @@ function checkUserHasBeenLogin(){
     }
 }
 
-function userRoleTeacher(){
-    const urlUserRoleTeacher = "http://localhost:9999/api/identity/users/getUserRoleTeacher";
+let pageProfileTeacher = 0;
+let sizeProfileTeacher = 6;
+let isLoadingProfileTeacher = false;
+
+function userRoleTeacher() {
+    isLoadingProfileTeacher = true;
+    const urlUserRoleTeacher = `http://localhost:9999/api/identity/users/getUserRole/TEACHER?page=${pageProfileTeacher}&size=${sizeProfileTeacher}`;
+
     fetch(urlUserRoleTeacher, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
         }
     })
-    .then((response) => {
-        return response.json();
-    })
+    .then((response) => response.json())
     .then((data) => {
         const frameTeacher = document.getElementById('frameTeacher');
         console.log(data);
-        data.result.forEach(profile => {
-            const article = document.createElement("article");
-            article.className = `class="flex flex-col bg-gray-50 rounded-lg p-5 shadow hover:shadow-md transition-shadow h-full"
-                style="min-height: 220px;"`;
-            article.innerHTML = `
-            <div class="flex items-center space-x-4 mb-4">
-            <div
-                class="rounded-full w-14 h-14 flex items-center justify-center font-semibold text-indigo-600 bg-indigo-100"
-            >
-                <img src="${profile.avatar}" alt="Avatar" class="w-full h-full object-cover rounded-full">
-            </div>
-            <div>
-                <h2 class="font-semibold text-lg text-gray-900 leading-tight">
-                ${profile.fullName}
-                </h2>
-                <p class="text-gray-600 text-sm leading-relaxed">
-                address: ${profile.address} /
-                phoneNumber: ${profile.phoneNumber} 
-                </p>
-            </div>
-            </div>
-            <div class="flex items-center justify-between mt-auto">
-            <div
-                class="border border-indigo-600 rounded-md px-3 py-1 font-semibold text-indigo-600 bg-indigo-100"
-            >
-                32 bài
-            </div>
-            <button
-                data-user-id="${profile.userId}"
-                class="join-btn border border-indigo-600 rounded-md px-6 py-2 text-indigo-600 font-semibold hover:bg-indigo-600 hover:text-white transition"
-                type="button"
-            >
-                vào học
-            </button>
-            </div>
-            `;
-            frameTeacher.appendChild(article)
+
+        const token = localStorage.getItem('token');
+
+        data.result.data.forEach(profile => {
+            const urlTeacherPostsInHome = `http://localhost:9999/api/post/teacherPosts/${profile.userId}`;
+
+            fetch(urlTeacherPostsInHome, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            })
+            .then((response) => response.json())
+            .then((courseData) => {
+                const countCourses = courseData.result.length;
+
+                const article = document.createElement("article");
+                article.className = "flex flex-col bg-gray-50 rounded-lg p-5 shadow hover:shadow-md transition-shadow h-full";
+                article.style.minHeight = "220px";
+
+                article.innerHTML = `
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="rounded-full w-14 h-14 flex items-center justify-center font-semibold text-indigo-600 bg-indigo-100">
+                            <img src="${profile.avatar}" alt="Avatar" class="w-full h-full object-cover rounded-full">
+                        </div>
+                        <div>
+                            <h2 class="font-semibold text-lg text-gray-900 leading-tight">${profile.fullName}</h2>
+                            <p class="text-gray-600 text-sm leading-relaxed">
+                                address: ${profile.address} / phoneNumber: ${profile.phoneNumber}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mt-auto">
+                        <div class="border border-indigo-600 rounded-md px-3 py-1 font-semibold text-indigo-600 bg-indigo-100">
+                            ${countCourses} Bài
+                        </div>
+                        <button
+                            data-user-id="${profile.userId}"
+                            class="join-btn border border-indigo-600 rounded-md px-6 py-2 text-indigo-600 font-semibold hover:bg-indigo-600 hover:text-white transition"
+                            type="button"
+                        >
+                            vào học
+                        </button>
+                    </div>
+                `;
+
+                frameTeacher.appendChild(article);
+            })
+            .catch((err) => {
+                console.error("Error when fetching teacher posts:", err);
+            });
         });
+
+        isLoadingProfileTeacher = false;
+        pageProfileTeacher++;
     })
     .catch((err) => {
-        console.log("error when get profile teacher: ", err);
-        alert("loi");
-    })
+        console.error("Error when fetching teacher profiles:", err);
+        alert("Lỗi khi lấy danh sách giáo viên.");
+    });
 }
+
 
 function getUserIdTeacher(){
      document.getElementById('frameTeacher').addEventListener('click', function (event) {
@@ -183,51 +209,57 @@ function blogStudents() {
             return;
         }
 
-        const postPromises = posts.map(async (post) => {
-            const userIdPerson = post.userId;
-            const urlProfileFromUserId = `http://localhost:9999/api/profile/profiles/getProfile/fromUserId/${userIdPerson}`;
+        // ⚠️ Không append bài viết ngay — chờ fetch avatar xong đã
+        const articles = await Promise.all(
+            posts.map(async (post) => {
+                const userIdPerson = post.userId;
+                const urlProfileFromUserId = `http://localhost:9999/api/profile/profiles/getProfile/fromUserId/${userIdPerson}`;
 
-            let avt = null;
-            try {
-                const response = await fetch(urlProfileFromUserId, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                });
-                const profileData = await response.json();
-                avt = profileData.result.avatar;
-            } catch (err) {
-                console.log("Error when getting profile from userId:", err);
-            }
+                let avt = "/default-avatar.png";
+                try {
+                    const response = await fetch(urlProfileFromUserId, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    });
+                    const profileData = await response.json();
+                    avt = profileData.result?.avatar ?? avt;
+                } catch (err) {
+                    console.log("Lỗi khi lấy avatar từ userId:", err);
+                }
 
-            const article = document.createElement('article');
-            article.className = "mb-8 p-4 border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow";
-            article.innerHTML = `
-                <div class="flex items-center mb-3 space-x-3">
-                    <div class="rounded-full w-10 h-10 overflow-hidden">
-                        <img src="${avt ?? '/default-avatar.png'}" alt="Avatar" class="w-full h-full object-cover rounded-full">
+                const article = document.createElement('article');
+                article.className = "mb-8 p-4 border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow";
+                article.innerHTML = `
+                    <div class="flex items-center mb-3 space-x-3">
+                        <div class="rounded-full w-10 h-10 overflow-hidden">
+                            <img src="${avt}" alt="Avatar" class="w-full h-full object-cover rounded-full">
+                        </div>
+                        <span class="font-semibold text-gray-900 text-lg select-text">${post.fullName}</span>
+                        <span class="text-xs text-gray-500">${post.createdTime}</span>
                     </div>
-                    <span class="font-semibold text-gray-900 text-lg select-text">${post.fullName}</span>
-                    <span class="text-xs text-gray-500">${post.createdTime}</span>
-                </div>
-                <div class="border border-gray-200 rounded-md p-3 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap bg-gray-50">
-                    ${post.content}
-                </div>
-            `;
-            blogStudent.appendChild(article);
-        });
+                    <div class="border border-gray-200 rounded-md p-3 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap bg-gray-50">
+                        ${post.content}
+                    </div>
+                `;
+                return article; // Trả về element, chưa append
+            })
+        );
 
-        await Promise.all(postPromises);
+        // ✅ Sau khi tất cả avatar đã được lấy → append lần lượt đúng thứ tự
+        articles.forEach(article => blogStudent.appendChild(article));
+
         page++;
     })
     .catch((err) => {
-        console.log("Error when getting all blogs student:", err);
+        console.log("Lỗi khi lấy danh sách bài viết:", err);
     })
     .finally(() => {
         isLoading = false;
     });
 }
+
 
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -240,10 +272,8 @@ window.addEventListener("DOMContentLoaded", () => {
         checkUserNewOrNot();
         getUserIdTeacher();
     }
-})
-
-const blogStudentFrame = document.getElementById('frameBlogStudent');
-blogStudentFrame.addEventListener("scroll", () => {
+    const blogStudentFrame = document.getElementById('frameBlogStudent');
+    blogStudentFrame.addEventListener("scroll", () => {
     const scrollTop = blogStudentFrame.scrollTop;
     const scrollHeight = blogStudentFrame.scrollHeight;
     const clientHeight = blogStudentFrame.clientHeight;
@@ -252,3 +282,6 @@ blogStudentFrame.addEventListener("scroll", () => {
         blogStudents();
     }
 });
+})
+
+

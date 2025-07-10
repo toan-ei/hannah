@@ -8,7 +8,7 @@ spring:
     name: AI-service
   ai:
     openai:
-      api-key: ${GEMINI_KEY}
+      api-key: AIzaSyCtpRruqMdk4W-Nx9UCoAyOSVYI48EfCvU
       chat:
         base-url: https://generativelanguage.googleapis.com
         completions-path: /v1beta/openai/chat/completions

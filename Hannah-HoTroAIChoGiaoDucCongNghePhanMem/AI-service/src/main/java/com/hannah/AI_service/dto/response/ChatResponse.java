@@ -3,6 +3,8 @@ package com.hannah.AI_service.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 @Builder
@@ -12,4 +14,7 @@ import lombok.experimental.FieldDefaults;
 public class ChatResponse {
     String userId;
     String message;
+    String responseOfAssistant;
+    Instant createdTime;
+    String createdTimePrint;
 }

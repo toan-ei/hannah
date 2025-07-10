@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Hannah</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #6366f1;
+      --dark: #1f2937;
+      --light: #f9fafb;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .sidebar {
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .table-row:hover {
+      background-color: rgba(79, 70, 229, 0.05);
+    }
+    
+    .tooltip {
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .has-tooltip:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    /* Dark mode styles */
+    .dark .dark\:bg-dark {
+      background-color: var(--dark);
+    }
+    
+    .dark .dark\:text-light {
+      color: var(--light);
+    }
+    
+    .dark .dark\:border-gray-700 {
+      border-color: #374151;
+    }
+    
+    .dark .dark\:bg-gray-800 {
+      background-color: #1f2937;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 h-full dark:bg-dark">
+  <div class="flex h-full">
+    <!-- Sidebar -->
+    <div class="sidebar bg-white w-64 flex-shrink-0 shadow-lg dark:bg-gray-800 dark:text-light">
+      <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between">
+          <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400">Hannah Admin</div>
+          <button id="theme-toggle" class="p-1 rounded-full focus:outline-none">
+            <i class="fas fa-moon text-gray-500 dark:hidden"></i>
+            <i class="fas fa-sun text-yellow-300 hidden dark:block"></i>
+          </button>
+        </div>
+      </div>
+      
+      <nav class="p-4">
+        <div class="space-y-2">
+          <a href="#" class="flex items-center p-2 text-indigo-600 rounded-lg bg-indigo-50 dark:bg-gray-700 dark:text-indigo-400">
+            <i class="fas fa-users mr-3"></i>
+            <span>Main Management</span>
+          </a>
+          <a href="#" class="flex items-center p-2 text-gray-600 rounded-lg hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+            <i class="fas fa-cog mr-3"></i>
+            <span>Settings</span>
+          </a>
+        </div>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Header -->
+      <header class="bg-white shadow-sm z-10 dark:bg-gray-800 dark:border-gray-700">
+        <div class="flex items-center justify-between p-4">
+          <div class="flex items-center">
+            <button id="sidebar-toggle" class="p-2 mr-2 text-gray-600 rounded-lg hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="text-xl font-semibold dark:text-light">User Management</h1>
+          </div>
+          
+          <div class="flex items-center">
+            <div class="relative ml-2">
+              <button id="user-menu-button" class="flex items-center focus:outline-none">
+                <div class="w2- h2- rounded-full overflow-hidden">
+                  <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/68fbd699-1266-4a92-bb16-8f4f7299337c.png" alt="Admin profile picture with professional suit and smiling face" class="w-10 h-10 rounded-full">
+                </div>
+                <span class="ml-2 text-gray-700 dark:text-gray-300">Admin</span>
+                <i class="fas fa-chevron-down ml-1 text-gray-500 dark:text-gray-400"></i>
+              </button>
+              
+              <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 dark:bg-gray-700">
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600">Profile</a>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600">Settings</a>
+                <a id="logoutAdmin" href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600">Sign out</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Main Content Area -->
+      <main class="flex-1 overflow-y-auto p-6">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
+          <div id="totalUser" class="stat-card bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 transition duration-300">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm dark:text-gray-400">Total Users</p>
+                <h3 id="totalUserNumber" class="text-2xl font-bold mt-1 dark:text-light">1,254</h3>
+              </div>
+              <div class="p-3 rounded-full bg-indigo-50 text-indigo-600 dark:bg-gray-700 dark:text-indigo-400">
+                <i class="fas fa-users text-xl"></i>
+              </div>
+            </div>
+            <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+              <span class="text-green-500 font-medium"><i class="fas fa-arrow-up"></i> 12.5%</span> from last month
+            </div>
+          </div>
+          
+          <div id="totalTeacher" class="stat-card bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 transition duration-300">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm dark:text-gray-400">Total Teachers</p>
+                <h3 id="totalTeacherNumber" class="text-2xl font-bold mt-1 dark:text-light">258</h3>
+              </div>
+              <div class="p-3 rounded-full bg-indigo-50 text-indigo-600 dark:bg-gray-700 dark:text-indigo-400">
+                <i class="fas fa-chalkboard-teacher text-xl"></i>
+              </div>
+            </div>
+            <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+              <span class="text-green-500 font-medium"><i class="fas fa-arrow-up"></i> 8.2%</span> from last month
+            </div>
+          </div>
+        </div>
+        
+        <!-- Users Table -->
+        <div id="userTable" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700 hidden">
+          <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between dark:border-gray-700">
+            <h2 class="font-semibold text-lg dark:text-light">Users List</h2>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <i class="fas fa-search text-gray-400"></i>
+              </span>
+              <input type="text" placeholder="Search users..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            </div>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">ID</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">User</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Day of birth</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Gender</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Phone number</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">upgrade</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Delete</th>
+                </tr>
+              </thead>
+              <tbody id="elementUser" class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                <!-- User 1 -->
+                
+              </tbody>
+            </table>
+          </div>
+          <div id="paginationControls" class="flex space-x-2 mt-4 justify-center">
+            
+          </div>
+        </div>
+
+        <!-- teachers Table -->
+        <div id="teacherTable" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700 hidden">
+          <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between dark:border-gray-700">
+            <h2 class="font-semibold text-lg dark:text-light">Teachers List</h2>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <i class="fas fa-search text-gray-400"></i>
+              </span>
+              <input type="text" placeholder="Search users..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            </div>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">ID</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">User</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Day of birth</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Gender</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Phone number</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Delete</th>
+                </tr>
+              </thead>
+              <tbody id="elementTeacher" class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                <!-- User 1 -->
+                
+              </tbody>
+            </table>
+          </div>
+          
+          <<div id="paginationControls1" class="flex space-x-2 mt-4 justify-center">
+            
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  
+  <!-- Promotion Confirmation Modal -->
+  <div id="promote-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+      </div>
+      
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+      
+      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full dark:bg-gray-800">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 dark:bg-gray-800">
+          <div class="sm:flex sm:items-start">
+            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10 dark:bg-indigo-900">
+              <i class="fas fa-exclamation text-indigo-600 dark:text-indigo-300"></i>
+            </div>
+            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">Promote User to Teacher</h3>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500 dark:text-gray-300" id="modal-message">Are you sure you want to promote this user to teacher? This will grant them additional permissions.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse dark:bg-gray-700">
+          <button type="button" onclick="promoteUser()" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm dark:bg-indigo-500 dark:hover:bg-indigo-600">
+            Confirm
+          </button>
+          <button type="button" onclick="hidePromoteModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-600 dark:border-gray-600 dark:text-white dark:hover:bg-gray-500">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Success Toast -->
+  <div id="success-toast" class="fixed bottom-4 right-4 hidden">
+    <div class="bg-green-50 border border-green-200 rounded-lg p-4 shadow-sm dark:bg-green-800 dark:border-green-700">
+      <div class="flex">
+        <div class="flex-shrink-0 text-green-600 dark:text-green-300">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-green-800 dark:text-white" id="toast-title">Success</h3>
+          <div class="mt-1 text-sm text-green-700 dark:text-green-300" id="toast-message"></div>
+        </div>
+        <div class="ml-auto pl-3">
+          <button onclick="hideToast()" class="-mx-1.5 -my-1.5 text-green-500 hover:text-green-600 focus:outline-none dark:text-green-400 dark:hover:text-green-300">
+            <span class="sr-only">Close</span>
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Variables to store the user being promoted
+    let currentUserId = null;
+    let currentUserName = '';
+    
+    // Toggle sidebar on mobile
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.toggle('hidden');
+    });
+    
+    // Toggle user dropdown menu
+    document.getElementById('user-menu-button').addEventListener('click', function() {
+      document.getElementById('user-menu').classList.toggle('hidden');
+    });
+    
+    // Toggle dark mode
+    document.getElementById('theme-toggle').addEventListener('click', function() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+    });
+    
+    // Check for saved dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark');
+    }
+    
+    // Show promotion confirmation modal
+    function showPromoteConfirm(userId, userName) {
+      currentUserId = userId;
+      currentUserName = userName;
+      
+      document.getElementById('modal-message').textContent = 
+        `Are you sure you want to promote ${userName} (ID: ${userId}) to teacher? This will grant them additional permissions.`;
+      
+      document.getElementById('promote-modal').classList.remove('hidden');
+    }
+    
+    // Hide promotion confirmation modal
+    function hidePromoteModal() {
+      document.getElementById('promote-modal').classList.add('hidden');
+    }
+    
+    // Promote user
+    function promoteUser() {
+      // Here you would typically make an API call to update the user's role
+      // For demo purposes, we'll just show a success message
+      
+      hidePromoteModal();
+      
+      // Show success toast
+      document.getElementById('toast-title').textContent = 'Promotion Successful';
+      document.getElementById('toast-message').textContent = 
+        `${currentUserName} has been promoted to teacher. Their new permissions are now active.`;
+      document.getElementById('success-toast').classList.remove('hidden');
+      
+      // In a real app, we would update the UI to reflect the role change
+      setTimeout(() => {
+        hideToast();
+        // This would be replaced with actual DOM updates based on API response
+      }, 3000);
+    }
+    
+    // Hide toast
+    function hideToast() {
+      document.getElementById('success-toast').classList.add('hidden');
+    }
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+      if (event.target === document.getElementById('promote-modal')) {
+        hidePromoteModal();
+      }
+    });
+  </script>
+  <script src="/webapp/js/admin.js"></script>
+  <script src="/webapp/js/refreshTokenAdmin.js"></script>
+</body>
+</html>
+

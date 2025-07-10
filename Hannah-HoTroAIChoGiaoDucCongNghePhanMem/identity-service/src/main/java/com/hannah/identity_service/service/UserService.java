@@ -5,9 +5,7 @@ import com.hannah.identity_service.dto.request.CreateUserRequest;
 import com.hannah.identity_service.dto.request.ProfileListUserIDRequest;
 import com.hannah.identity_service.dto.request.ProfileRequest;
 import com.hannah.identity_service.dto.request.UpdateUserRequest;
-import com.hannah.identity_service.dto.response.ApiResponse;
-import com.hannah.identity_service.dto.response.ProfileResponse;
-import com.hannah.identity_service.dto.response.UserResponse;
+import com.hannah.identity_service.dto.response.*;
 import com.hannah.identity_service.entity.Role;
 import com.hannah.identity_service.entity.User;
 import com.hannah.identity_service.exception.ApplicationException;
@@ -21,6 +19,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -88,26 +90,39 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-    public List<ProfileResponse> getUserRoleTeacher(){
-        List<User> allUser = userRepository.findAll();
-        List<String> userId = new ArrayList<>();
-        allUser.forEach(user -> {
-            user.getRoles().forEach(role -> {
-                if(role.getName().equals(PredefinedRole.TEACHER_ROLE)){
-                    userId.add(user.getId());
-                }
-            });
-        });
+    public PageResponseCustom<List<ProfileResponse>> getUserRole(String role, int page, int size){
+        Pageable pageable = PageRequest.of(page,size,Sort.by("username").ascending());
+        Page<User> byRolesName = userRepository.findAllByRoles_Name(role, pageable);
+        List<String> userId = byRolesName.getContent()
+                .stream()
+                .map(User::getId)
+                .collect(Collectors.toList());
+        log.info("page {}", page);
+        log.info("size {}", size);
         log.info("userids {}", userId);
         ProfileListUserIDRequest profileListUserIDRequest = ProfileListUserIDRequest.builder()
                 .userIds(userId)
                 .build();
         try {
-            ApiResponse<List<ProfileResponse>> profilesFromUserIds = profileClient.getProfilesFromUserIds(profileListUserIDRequest);
-            return profilesFromUserIds.getResult();
+            ApiResponse<List<ProfileResponse>> profilesFromUserIds =
+                    profileClient.getProfilesFromUserIds(profileListUserIDRequest);
+            return PageResponseCustom.<List<ProfileResponse>>builder()
+                    .totalElements(byRolesName.getTotalElements())
+                    .totalPage(byRolesName.getTotalPages())
+                    .currentPage(page)
+                    .pageSize(size)
+                    .data(profilesFromUserIds.getResult())
+                    .build();
         } catch (Exception e) {
             log.error("Lỗi gọi profileClient", e);
             throw new ApplicationException(ErrorCode.valueOf("loi"));
         }
+    }
+
+    public CountUserWithRoleResponse totalUserWithRole(String role){
+        long countUser = userRepository.countByRoles_Name(role);
+        return CountUserWithRoleResponse.builder()
+                .countUser(countUser)
+                .build();
     }
 }

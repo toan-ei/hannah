@@ -116,6 +116,46 @@
       </div>
     </div>
   </div>
+  <!-- Floating Chat Icon -->
+  <div class="fixed bottom-6 right-6 z-50">
+    <button id="iconChat" class="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-colors duration-200 focus:outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+      </svg>
+    </button>
+  </div>
+  <!-- Chat Overlay -->
+  <div id="chatOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white w-full max-w-lg h-[80vh] rounded-lg shadow-xl flex flex-col">
+      <!-- Chat Header -->
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-indigo-600 text-white rounded-t-lg">
+        <h3 class="font-semibold text-lg">Chat</h3>
+        <button onclick="toggleChat()" class="text-white hover:text-gray-200 focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <!-- Chat History -->
+       <div id="chatHistory" class="flex-1 overflow-y-auto p-4 flex flex-col-reverse space-y-4 space-y-reverse" style="scrollbar-width: thin;">
+        <!-- Sample Conversation (Newest at the top) -->
+        
+      </div>
+      <!-- Chat Input -->
+      <div class="border-t border-gray-200 p-4 bg-gray-50">
+        <div class="flex items-center space-x-2">
+          <input id="textChat"
+            type="text"
+            placeholder="Type your message..."
+            class="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
+          />
+          <button id="submitChat" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200">
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 <script>
@@ -142,4 +182,5 @@
 <script src="/webapp/js/home.js"></script>
 <script src="/webapp/js/RefreshToken.js"></script>
 <script src="/webapp/js/MyBlog.js"></script>
+<script src="/webapp/js/chat.js"></script>
 </html>

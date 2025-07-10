@@ -25,7 +25,8 @@ public class SecurityConfig {
             "/auth/logout",
             "/auth/checkToken",
             "/auth/refreshToken",
-            "/users/getUserRoleTeacher"
+            "/users/getUserRole/**",
+            "/users/countUserWithRole/**"
     };
     private final CustomJwtDecoder customJwtDecoder;
 

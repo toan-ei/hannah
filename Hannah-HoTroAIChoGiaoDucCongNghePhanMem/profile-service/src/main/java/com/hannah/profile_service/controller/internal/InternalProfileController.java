@@ -2,7 +2,6 @@ package com.hannah.profile_service.controller.internal;
 
 import com.hannah.profile_service.dto.request.ProfileListUserIDRequest;
 import com.hannah.profile_service.dto.request.ProfileRequest;
-import com.hannah.profile_service.dto.request.ProfileUpdateRequest;
 import com.hannah.profile_service.dto.response.ApiResponse;
 import com.hannah.profile_service.dto.response.ProfileResponse;
 import com.hannah.profile_service.service.ProfileService;

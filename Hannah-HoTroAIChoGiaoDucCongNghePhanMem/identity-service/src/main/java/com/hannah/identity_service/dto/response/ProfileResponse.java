@@ -19,4 +19,5 @@ public class ProfileResponse {
     String gender;
     String address;
     String phoneNumber;
+    int totalPages;
 }

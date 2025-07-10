@@ -38,7 +38,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     String[] PUBLIC_ENDPOINTS = {
             "/identity/auth/.*",
             "/identity/users/createUser",
-            "/identity/users/getUserRoleTeacher",
+            "/identity/users/getUserRole/.*",
+            "/identity/users/countUserWithRole/.*",
             "/file/media/download/.*",
             "/profile/profiles/getProfile/fromUserId/.*",
             "/post/getAllPost"

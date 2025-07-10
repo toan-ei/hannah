@@ -2,7 +2,9 @@ package com.hannah.AI_service.service;
 
 import com.hannah.AI_service.dto.request.ChatRequest;
 import com.hannah.AI_service.dto.response.ChatResponse;
+import com.hannah.AI_service.dto.response.PageResponse;
 import com.hannah.AI_service.entity.Chat;
+import com.hannah.AI_service.mapper.ChatMapper;
 import com.hannah.AI_service.repository.ChatRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 
 @Service
@@ -32,9 +35,13 @@ import java.util.Map;
 public class ChatService {
     private final ChatClient chatClient;
     private final ChatRepository chatRepository;
-    public ChatService(ChatClient.Builder builder, ChatRepository chatRepository){
+    private final ChatMapper chatMapper;
+    private final DateTimeFormatter dateTimeFormatter;
+    public ChatService(ChatClient.Builder builder, ChatRepository chatRepository, ChatMapper chatMapper, DateTimeFormatter dateTimeFormatter){
         this.chatClient = builder.build();
         this.chatRepository = chatRepository;
+        this.chatMapper = chatMapper;
+        this.dateTimeFormatter = dateTimeFormatter;
     }
 
     public ChatResponse chat(ChatRequest request){
@@ -62,6 +69,7 @@ public class ChatService {
 
         Prompt prompt = new Prompt(chatMemory.get(userId));
         String content = chatClient.prompt(prompt).call().content();
+        log.info("content {}", content);
         chatMemory.add(userId, new AssistantMessage(content));
 
         Chat chat = Chat.builder()
@@ -74,7 +82,35 @@ public class ChatService {
         chatRepository.save(chat);
         return ChatResponse.builder()
                 .userId(userId)
-                .message(content)
+                .message(request.getMessage())
+                .responseOfAssistant(content)
+                .createdTime(Instant.now())
+                .build();
+    }
+
+    public PageResponse<ChatResponse> history(int page, int size){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        Sort sort = Sort.by("createdTime").descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        Page<Chat> allByUserId = chatRepository.findAllByUserId(userId, pageable);
+        List<Chat> content = allByUserId.getContent();
+        List<ChatResponse> chatResponseList = new ArrayList<>();
+       for (Chat chat : content){
+           chatResponseList.add(ChatResponse.builder()
+                   .userId(userId)
+                   .message(chat.getMessage())
+                   .responseOfAssistant(chat.getResponseOfAssistant())
+                   .createdTimePrint(dateTimeFormatter.format(chat.getCreatedTime()))
+                   .createdTime(chat.getCreatedTime())
+                   .build());
+       }
+        return PageResponse.<ChatResponse>builder()
+                .totalPage(allByUserId.getTotalPages())
+                .pageSize(size)
+                .currentPage(page)
+                .totalElement(allByUserId.getTotalElements())
+                .data(chatResponseList)
                 .build();
     }
 }

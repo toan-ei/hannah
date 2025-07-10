@@ -54,8 +54,3 @@ updateBtn.addEventListener('click', (event) => {
         console.log('error when update profile user: ', err);
     })
 })
-const skip = document.getElementById('skip');
-skip.onclick = () => {
-    localStorage.clear();
-    window.location.href = "index.html";
-}
