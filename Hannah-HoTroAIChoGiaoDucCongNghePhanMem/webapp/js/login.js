@@ -25,7 +25,7 @@ sendBtn.addEventListener("click", () => {
     })
     .then((response) => {
         console.log(response);
-        if(response.code === 1003 || response.code === 1004){
+        if(response.code === 1003 || response.code === 1004 || response.code === 1002){
             alert("tài khoản hoặc mật khẩu sai");
         }
         else{

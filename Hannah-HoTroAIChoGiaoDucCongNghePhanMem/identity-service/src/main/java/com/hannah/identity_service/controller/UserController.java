@@ -1,6 +1,7 @@
 package com.hannah.identity_service.controller;
 
 import com.hannah.identity_service.dto.request.CreateUserRequest;
+import com.hannah.identity_service.dto.request.UpdateUserForAdminRequest;
 import com.hannah.identity_service.dto.request.UpdateUserRequest;
 import com.hannah.identity_service.dto.response.*;
 import com.hannah.identity_service.service.UserService;
@@ -55,6 +56,15 @@ public class UserController {
     @PutMapping("/updateUser/{userId}")
     public ApiResponse<UserResponse> updateUser(@RequestBody UpdateUserRequest request, @PathVariable String userId){
         UserResponse userResponse = userService.updateUser(request, userId);
+        return ApiResponse.<UserResponse>builder()
+                .code(1001)
+                .result(userResponse)
+                .build();
+    }
+
+    @PutMapping("/updateUserForAdmin/{userId}")
+    public ApiResponse<UserResponse> updateUserForAdmin(@RequestBody UpdateUserForAdminRequest request, @PathVariable String userId){
+        UserResponse userResponse = userService.updateUserForAdmin(request, userId);
         return ApiResponse.<UserResponse>builder()
                 .code(1001)
                 .result(userResponse)

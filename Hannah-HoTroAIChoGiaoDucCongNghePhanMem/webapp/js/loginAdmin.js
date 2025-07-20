@@ -24,9 +24,21 @@ sendBtn.addEventListener("click", () => {
         return data.json();
     })
     .then((response) => {
-        alert("ban da dang nhap thanh cong");
-        localStorage.setItem("tokenAdmin", response.result.token);
-        window.location.href = "admin.html";
+        const token = response.result.token;
+        const payloadBase64 = token.split('.')[1];
+        const payloadJson = atob(payloadBase64);
+        const payload = JSON.parse(payloadJson);
+        console.log("payload is role: ", payload);
+        const role =  payload.scope;
+        console.log("role: ", role);
+        if(role === "ADMIN"){
+            alert("ban da dang nhap thanh cong");
+            localStorage.setItem("tokenAdmin", response.result.token);
+            window.location.href = "admin.html";
+        }
+        else{
+            alert("vui lòng đăng nhập đúng tài khoản admin");
+        }
     })
     .catch((err) => {
         console.log("loi dang ki: ", err);

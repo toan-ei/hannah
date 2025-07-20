@@ -27,7 +27,7 @@ function loadListStudent(pageListStudent){
                       </div>
                     </div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">${student.dob}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">${new Date(student.dob).toLocaleDateString('vi-VN')}</td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">${student.gender}</span>
                   </td>
@@ -35,7 +35,7 @@ function loadListStudent(pageListStudent){
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">${student.phoneNumber}</span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button onclick="showPromoteConfirm(1001, 'John Doe')" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-3">
+                    <button data-user-id-promote="${student.userId}" data-fullName="${student.fullName}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-3">
                       <i class="fas fa-user-graduate"></i> Promote
                     </button>
                   </td>
@@ -81,7 +81,7 @@ function loadListTeacher(pageListTeacher){
                       </div>
                     </div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">${teacher.dob}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"> ${new Date(teacher.dob).toLocaleDateString('vi-VN')}</td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">${teacher.gender}</span>
                   </td>
@@ -120,6 +120,7 @@ function deleteTeacherinAdmin (){
           .then((Response) => Response.json())
           .then((data) => {
             alert('delete user role teacher success');
+            loadListTeacher(0);
           })
           .catch((err)=>{
             alert('error when call api delete user role teacher');
@@ -149,6 +150,7 @@ function deleteStudentInAdmin (){
           .then((Response) => Response.json())
           .then((data) => {
             alert('delete user role student success');
+            loadListStudent(0);
           })
           .catch((err)=>{
             alert('error when call api delete user role student');
@@ -157,6 +159,105 @@ function deleteStudentInAdmin (){
       }
   });
 }
+
+let promoteResolve = null;
+let currentUserId = null;
+let currentUserName = null;
+
+// Hiển thị modal xác nhận
+function showPromoteConfirm(userId, userName) {
+  currentUserId = userId;
+  currentUserName = userName;
+
+  document.getElementById('modal-message').textContent =
+    `Bạn có muốn nâng cấp tài khoản có tên là ${userName} (ID: ${userId}) thành tài khoản teacher không?`;
+
+  document.getElementById('promote-modal').classList.remove('hidden');
+
+  return new Promise((resolve) => {
+    promoteResolve = resolve;
+  });
+}
+
+// Ẩn modal (không quyết định true/false)
+function hidePromoteModal() {
+  document.getElementById('promote-modal').classList.add('hidden');
+}
+
+// Hủy nâng cấp
+function cancelPromote() {
+  hidePromoteModal();
+  if (promoteResolve) {
+    promoteResolve(false);
+    promoteResolve = null;
+  }
+}
+
+// Xác nhận nâng cấp
+function promoteUser() {
+  hidePromoteModal();
+  if (promoteResolve) {
+    promoteResolve(true);
+    promoteResolve = null;
+  }
+
+  // Hiển thị toast
+  document.getElementById('toast-title').textContent = 'Nâng cấp thành công';
+  document.getElementById('toast-message').textContent =
+    `${currentUserName} đã được nâng cấp lên thành teacher.`;
+  document.getElementById('success-toast').classList.remove('hidden');
+
+  setTimeout(hideToast, 3000);
+}
+
+// Ẩn toast
+function hideToast() {
+  document.getElementById('success-toast').classList.add('hidden');
+}
+
+// Gắn sự kiện click cho nút Promote
+function setupPromoteListener() {
+  const tokenAdmin = localStorage.getItem('tokenAdmin');
+  const tableBody = document.getElementById("elementUser");
+
+  tableBody.addEventListener("click", async function (event) {
+    const target = event.target.closest("button[data-user-id-promote]");
+    if (!target) return;
+
+    const userId = target.getAttribute("data-user-id-promote");
+    const fullName = target.getAttribute("data-fullName");
+
+    const confirmed = await showPromoteConfirm(userId, fullName);
+    if (!confirmed) return;
+
+    const url = `http://localhost:9999/api/identity/users/updateUserForAdmin/${userId}`;
+    const data = { roles: ["TEACHER"] };
+
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${tokenAdmin}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) {
+        throw new Error("Lỗi server");
+      }
+
+      await response.json();
+      promoteUser();
+      loadListStudent(0);
+    } catch (err) {
+      alert('Lỗi khi cập nhật tài khoản từ Student sang Teacher.');
+      console.error("Lỗi cập nhật:", err);
+    }
+  });
+}
+
+
 
 function updatePaginationControls(totalPages, current) {
     console.log("total page: ", totalPages);
@@ -309,6 +410,7 @@ window.addEventListener("DOMContentLoaded", () => {
         loadListStudent(0);
         userTable.classList.remove('hidden');
         deleteStudentInAdmin();
+        setupPromoteListener();
     }
     totalTeacher.onclick = () => {
         userTable.classList.add('hidden');

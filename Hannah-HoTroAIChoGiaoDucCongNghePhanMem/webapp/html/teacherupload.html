@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Input Template</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <header
+    class="flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-4 shadow-sm sticky top-0 z-50"
+  >
+    <div class="flex items-center space-x-3 mb-3 sm:mb-0">
+      <img
+        alt="Logo text 'Logo' in black serif font on white background"
+        class="w-16 h-10 object-contain"
+        height="40"
+        src="https://storage.googleapis.com/a1aa/image/e55895b2-33d4-44b5-75b2-d525b9d5ca5a.jpg"
+        width="64"
+      />
+      <span class="font-semibold text-xl text-gray-900 tracking-wide">
+        Hannah - Education (Teacher)
+      </span>
+    </div>
+    <nav class="flex space-x-10 font-semibold text-gray-700 text-lg">
+      <a
+        class="hover:text-gray-900 transition-colors duration-200 border-b-2 border-transparent hover:border-indigo-600"
+        href="index.html"
+        >Home</a
+      >
+      <a
+        class="hover:text-gray-900 transition-colors duration-200 border-b-2 border-transparent hover:border-indigo-600"
+        href="myblog.html"
+        >My Blog</a
+      >
+      <a id="printUploadFile"
+        class="hover:text-gray-900 transition-colors duration-200 border-b-2 border-transparent hover:border-indigo-600 hidden"
+        href="teacherupload.html"
+        >Upload File</a
+      >
+    </nav>
+    <div class="flex space-x-4" id="auth-buttons">
+      
+    </div>
+  </header>
+  <div class="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-6">
+    <!-- Media File Upload -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2" for="media">Media (File)</label>
+      <input type="file" id="media" name="media"
+             class="block w-full text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    </div>
+    <!-- Request Text Input -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2" for="request">Name File</label>
+      <textarea id="request" name="request" rows="4"
+                class="block w-full text-sm text-gray-700 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder='Nhập Tên'></textarea>
+    </div>
+    <!-- Submit Button -->
+    <div>
+      <button id="submituploadfile" type="submit"
+              class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700">
+        Submit
+      </button>
+    </div>
+    
+  </div>
+</body>
+<script src="/webapp/js/home.js"></script>
+<script src="/webapp/js/teacherupload.js"></script>
+<script src="/webapp/js/RefreshToken.js"></script>
+</html>

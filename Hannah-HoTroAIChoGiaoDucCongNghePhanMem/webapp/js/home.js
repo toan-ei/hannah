@@ -260,11 +260,26 @@ function blogStudents() {
     });
 }
 
+function isRole (){
+    const token = localStorage.getItem('token');
+    const payloadBase64 = token.split('.')[1];
+    const payloadJson = atob(payloadBase64);
+    const payload = JSON.parse(payloadJson);
+    console.log("payload is role: ", payload);
+    const role =  payload.scope;
+    console.log("role: ", role);
+    if(role === "TEACHER"){
+        const printUploadFile = document.getElementById('printUploadFile');
+        console.log("print upload: ", printUploadFile);
+        printUploadFile.classList.remove('hidden');
+    }
+}
 
 
 window.addEventListener("DOMContentLoaded", () => {
     console.log("token: ", localStorage.getItem("token"));
     checkUserHasBeenLogin();
+    isRole();
     if (window.location.pathname.endsWith("index.html")) {
         console.log("Bạn đang ở trang index.html");
         blogStudents();

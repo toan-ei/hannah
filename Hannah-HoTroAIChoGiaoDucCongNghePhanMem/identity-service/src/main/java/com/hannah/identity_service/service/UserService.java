@@ -1,10 +1,7 @@
 package com.hannah.identity_service.service;
 
 import com.hannah.identity_service.constant.PredefinedRole;
-import com.hannah.identity_service.dto.request.CreateUserRequest;
-import com.hannah.identity_service.dto.request.ProfileListUserIDRequest;
-import com.hannah.identity_service.dto.request.ProfileRequest;
-import com.hannah.identity_service.dto.request.UpdateUserRequest;
+import com.hannah.identity_service.dto.request.*;
 import com.hannah.identity_service.dto.response.*;
 import com.hannah.identity_service.entity.Role;
 import com.hannah.identity_service.entity.User;
@@ -81,6 +78,15 @@ public class UserService {
                 .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
         userMapper.updateUser(user, request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public UserResponse updateUserForAdmin(UpdateUserForAdminRequest request, String userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
         var roles = roleRepository.findAllById(request.getRoles());
         user.setRoles(new HashSet<>(roles));
         return userMapper.toUserResponse(userRepository.save(user));

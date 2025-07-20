@@ -288,8 +288,6 @@
   
   <script>
     // Variables to store the user being promoted
-    let currentUserId = null;
-    let currentUserName = '';
     
     // Toggle sidebar on mobile
     document.getElementById('sidebar-toggle').addEventListener('click', function() {
@@ -311,49 +309,8 @@
     if (localStorage.getItem('darkMode') === 'true') {
       document.documentElement.classList.add('dark');
     }
-    
-    // Show promotion confirmation modal
-    function showPromoteConfirm(userId, userName) {
-      currentUserId = userId;
-      currentUserName = userName;
-      
-      document.getElementById('modal-message').textContent = 
-        `Are you sure you want to promote ${userName} (ID: ${userId}) to teacher? This will grant them additional permissions.`;
-      
-      document.getElementById('promote-modal').classList.remove('hidden');
-    }
-    
-    // Hide promotion confirmation modal
-    function hidePromoteModal() {
-      document.getElementById('promote-modal').classList.add('hidden');
-    }
-    
-    // Promote user
-    function promoteUser() {
-      // Here you would typically make an API call to update the user's role
-      // For demo purposes, we'll just show a success message
-      
-      hidePromoteModal();
-      
-      // Show success toast
-      document.getElementById('toast-title').textContent = 'Promotion Successful';
-      document.getElementById('toast-message').textContent = 
-        `${currentUserName} has been promoted to teacher. Their new permissions are now active.`;
-      document.getElementById('success-toast').classList.remove('hidden');
-      
-      // In a real app, we would update the UI to reflect the role change
-      setTimeout(() => {
-        hideToast();
-        // This would be replaced with actual DOM updates based on API response
-      }, 3000);
-    }
-    
-    // Hide toast
-    function hideToast() {
-      document.getElementById('success-toast').classList.add('hidden');
-    }
-    
-    // Close modal when clicking outside
+   
+
     window.addEventListener('click', function(event) {
       if (event.target === document.getElementById('promote-modal')) {
         hidePromoteModal();
